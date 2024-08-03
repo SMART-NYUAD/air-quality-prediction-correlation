@@ -60,6 +60,3 @@ air_quality_correlation/
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
-
-These README files should provide clear guidance on the structure, usage, and purpose of each part of your project. Adjust the descriptions and commands as necessary to fit your specific setup and requirements.
