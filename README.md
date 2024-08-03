@@ -1,6 +1,3 @@
-### Main Project README (README.md)
-
-```markdown
 # Air Quality Prediction and Correlation
 
 ## Description
