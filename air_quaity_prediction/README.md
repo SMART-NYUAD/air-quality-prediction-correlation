@@ -2,7 +2,7 @@
 
 ## Description
 
-This folder contains scripts and models for predicting PM2.5 levels using various machine learning techniques. It includes tools for training models, benchmarking their performance, and forecasting future PM2.5 concentrations.
+This folder contains scripts and models for predicting PM2.5 levels using Recurrent Neural Networks (RNNs) and Long Short-Term Memory (LSTM) models, which are well-suited for time series forecasting. The scripts include tools for training these models, benchmarking their performance, and forecasting future PM2.5 concentrations.
 
 ## Structure
 
