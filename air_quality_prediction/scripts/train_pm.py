@@ -119,7 +119,7 @@ def main():
                 Y.append(dataset[i + look_back, 0])
             return np.array(X), np.array(Y)
 
-        look_back = 7000
+        look_back = 2000
         X, y = create_dataset(data_scaled, look_back)
         X = np.reshape(X, (X.shape[0], X.shape[1], X.shape[2]))
 
@@ -137,7 +137,7 @@ def main():
         model.compile(optimizer='adam', loss='mean_squared_error')
 
         # Train the model
-        history = model.fit(X_train, y_train, epochs=80, batch_size=1, verbose=2)
+        history = model.fit(X_train, y_train, epochs=120, batch_size=1, verbose=2)
 
         # Save the model and other important variables
         model.save('lstm_model.h5')
