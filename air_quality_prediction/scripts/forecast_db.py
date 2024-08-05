@@ -11,6 +11,7 @@ import time
 import os
 import pytz
 from dotenv import load_dotenv
+import shutil
 
 # Import the scraper function
 from web_scraper_cities import run_scraper
@@ -30,6 +31,19 @@ def connect_to_db():
         password=os.getenv('DB_PASSWORD'),
         database=os.getenv('DB_NAME')
     )
+
+# Function to clear the outdoor_pm25_dataset folder
+def clear_dataset_folder():
+    folder = 'outdoor_pm25_dataset'
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print(f'Failed to delete {file_path}. Reason: {e}')
 
 # Fetch the last N data points
 def fetch_last_n_points(metadata_ids, csv_file, n_points=100):
@@ -69,7 +83,6 @@ def fetch_last_n_points(metadata_ids, csv_file, n_points=100):
         if df.empty:
             print("CSV file is empty or not loaded properly.")
         return df['pm2.5_raw'].values, df['timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S').values
-
 
     indoor_data, indoor_timestamps = fetch_sensor_data(metadata_ids)
     outdoor_data, outdoor_timestamps = read_csv_data(csv_file)
@@ -113,6 +126,9 @@ def upload_to_db(timestamp, forecasted, actual=None):
 
 # Main function to run every 6 hours
 def forecast_pm25():
+    # Clear the dataset folder
+    clear_dataset_folder()
+
     # Run the scraper and get the latest CSV file
     latest_csv_file = run_scraper()
     if latest_csv_file is None:
@@ -124,7 +140,7 @@ def forecast_pm25():
 
     metadata_ids = [86, 74, 35]
     csv_file = os.path.join('outdoor_pm25_dataset', latest_csv_file)
-    n_points = 7000  # You can adjust this value to experiment with different amounts of data
+    n_points = 2000  # You can adjust this value to experiment with different amounts of data
 
     last_n_data, last_n_timestamps = fetch_last_n_points(metadata_ids, csv_file, n_points=n_points)
 
@@ -176,19 +192,36 @@ def upload_actual_data():
     # Use the latest CSV file for actual data
     latest_csv_file = sorted([f for f in os.listdir('outdoor_pm25_dataset') if f.endswith('.csv')])[-1]
     csv_file = os.path.join('outdoor_pm25_dataset', latest_csv_file)
-    n_points = 2  # Fetch the last 6 hours of actual data
+    n_points = 2  # Fetch the last 2 hours of actual data
 
-    last_n_data, last_n_timestamps = fetch_last_n_points(metadata_ids, csv_file, n_points=n_points)
+    # Fetch and average the data for the last 2 hours
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    data_points = []
 
-    # Scale the data
-    last_n_scaled = scaler.transform(last_n_data)
+    for metadata_id in metadata_ids:
+        query = f"""
+        SELECT sensor_statistics_hourly.average, sensor_statistics_coorelation.timestamp as unix_timestamp
+        FROM sensor_statistics_hourly
+        JOIN sensor_statistics_coorelation ON sensor_statistics_hourly.update_time_id = sensor_statistics_coorelation.update_time_id
+        WHERE sensor_statistics_hourly.metadata_id = {metadata_id}
+        ORDER BY sensor_statistics_coorelation.timestamp DESC
+        LIMIT 2
+        """
+        cursor.execute(query)
+        results = cursor.fetchall()
+        data_points.extend(results)
 
-    # Get actual PM2.5 values
-    actual_pm25 = last_n_scaled[:, 0]
+    if not data_points:
+        print("No data returned for metadata IDs")
+        return
+
+    timestamps = [datetime.fromtimestamp(result[1]).strftime('%Y-%m-%d %H:%M:%S') for result in data_points]
+    averaged_data = np.mean([float(result[0]) for result in data_points])
 
     # Upload actual data to the database
-    for i, timestamp in enumerate(last_n_timestamps):
-        upload_to_db(timestamp, None, actual_pm25[i])
+    for timestamp in timestamps:
+        upload_to_db(timestamp, None, averaged_data)
 
 # Schedule the tasks
 forecast_pm25()
