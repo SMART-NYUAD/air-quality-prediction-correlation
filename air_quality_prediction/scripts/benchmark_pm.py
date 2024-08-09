@@ -24,7 +24,7 @@ indoor_pm25_scaler.min_, indoor_pm25_scaler.scale_ = scaler.min_[0], scaler.scal
 
 # Inverse transform the predictions and actual values using the new scaler
 predictions_inversed = indoor_pm25_scaler.inverse_transform(predictions)
-y_test_inversed = indoor_pm25_scaler.inverse_transform(y_test.reshape(-1, 1))
+y_test_inversed = indoor_pm25_scaler.inverse_transform(y_test)
 
 # Ensure no negative values (optional debugging)
 print("Predicted values (inverse transformed):", predictions_inversed[:10])
@@ -33,24 +33,25 @@ print("Actual values (inverse transformed):", y_test_inversed[:10])
 # Calculate errors
 errors = predictions_inversed - y_test_inversed
 
-# Calculate RMSE and MAE
-rmse = np.sqrt(mean_squared_error(y_test_inversed, predictions_inversed))
-mae = mean_absolute_error(y_test_inversed, predictions_inversed)
+# Calculate RMSE and MAE for each step and overall
+rmse = np.sqrt(mean_squared_error(y_test_inversed.flatten(), predictions_inversed.flatten()))
+mae = mean_absolute_error(y_test_inversed.flatten(), predictions_inversed.flatten())
 
 print(f"RMSE: {rmse}")
 print(f"MAE: {mae}")
 
-# Plotting the results: Actual vs Predicted
-plt.figure(figsize=(15, 7))
-plt.plot(timestamps_test, y_test_inversed, label='Actual PM2.5', marker='o', linestyle='-', color='blue')
-plt.plot(timestamps_test, predictions_inversed, label='Predicted PM2.5', marker='x', linestyle='--', color='red')
-plt.title('Comparison of Actual and Predicted PM2.5 Values')
-plt.xlabel('Timestamp')
-plt.ylabel('PM2.5 Concentration')
-plt.xticks(rotation=45)
-plt.legend()
-plt.grid(True)
-plt.show()
+# Plotting the results: Actual vs Predicted for each step
+for step in range(y_test.shape[1]):
+    plt.figure(figsize=(15, 7))
+    plt.plot(timestamps_test, y_test_inversed[:, step], label=f'Actual PM2.5 Step {step+1}', marker='o', linestyle='-', color='blue')
+    plt.plot(timestamps_test, predictions_inversed[:, step], label=f'Predicted PM2.5 Step {step+1}', marker='x', linestyle='--', color='red')
+    plt.title(f'Comparison of Actual and Predicted PM2.5 Values for Step {step+1}')
+    plt.xlabel('Timestamp')
+    plt.ylabel('PM2.5 Concentration')
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
 # Plotting the distribution of errors with density
 plt.figure(figsize=(10, 5))
@@ -63,7 +64,7 @@ plt.show()
 
 # Scatter plot: Actual vs Predicted
 plt.figure(figsize=(10, 5))
-plt.scatter(y_test_inversed, predictions_inversed, alpha=0.5)
+plt.scatter(y_test_inversed.flatten(), predictions_inversed.flatten(), alpha=0.5)
 plt.plot([y_test_inversed.min(), y_test_inversed.max()], [y_test_inversed.min(), y_test_inversed.max()], 'k--', lw=2)
 plt.title('Actual vs Predicted PM2.5')
 plt.xlabel('Actual PM2.5')

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense
+from tensorflow.keras.layers import LSTM, Dense, Dropout, Conv1D, MaxPooling1D, Bidirectional
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import pickle
@@ -95,8 +95,8 @@ def main():
     print("Sample outdoor timestamps:", outdoor_timestamps[:5])
 
     # Merge indoor and outdoor data based on timestamps
-    all_data = pd.merge(pd.DataFrame({'timestamp': indoor_timestamps, 'indoor_pm2.5': indoor_data}),
-                        pd.DataFrame({'timestamp': outdoor_timestamps, 'outdoor_pm2.5': outdoor_data}),
+    all_data = pd.merge(pd.DataFrame({'timestamp': indoor_timestamps, 'indoor.pm2.5': indoor_data}),
+                        pd.DataFrame({'timestamp': outdoor_timestamps, 'outdoor.pm2.5': outdoor_data}),
                         on='timestamp', how='inner')
 
     if all_data.empty:
@@ -104,40 +104,44 @@ def main():
     else:
         print("Data successfully merged. Proceeding with scaling and model training...")
         scaler = MinMaxScaler(feature_range=(0, 1))
-        data_scaled = scaler.fit_transform(all_data[['indoor_pm2.5', 'outdoor_pm2.5']])
+        data_scaled = scaler.fit_transform(all_data[['indoor.pm2.5', 'outdoor.pm2.5']])
 
         # Verify scaling
         print("Scaling min:", scaler.data_min_)
         print("Scaling max:", scaler.data_max_)
 
         # Prepare data for LSTM
-        def create_dataset(dataset, look_back=1):
+        def create_dataset(dataset, look_back=72, forecast_horizon=2):
             X, Y = [], []
-            for i in range(len(dataset) - look_back - 1):
-                a = dataset[i:(i + look_back), :]
-                X.append(a)
-                Y.append(dataset[i + look_back, 0])
+            for i in range(len(dataset) - look_back - forecast_horizon):
+                X.append(dataset[i:(i + look_back), :])
+                Y.append(dataset[(i + look_back):(i + look_back + forecast_horizon), 0])
             return np.array(X), np.array(Y)
 
-        look_back = 2000
-        X, y = create_dataset(data_scaled, look_back)
+        look_back = 120
+        forecast_horizon = 2
+        X, y = create_dataset(data_scaled, look_back, forecast_horizon)
         X = np.reshape(X, (X.shape[0], X.shape[1], X.shape[2]))
 
         # Splitting data into training and testing without shuffling
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
-        timestamps_test = all_data['timestamp'].values[look_back+1:][len(X_train):]  # Ensure timestamps align with test data
+        timestamps_test = all_data['timestamp'].values[look_back + forecast_horizon:][len(X_train):]  # Ensure timestamps align with test data
 
         # Sort timestamps in ascending order
         timestamps_test = timestamps_test[::-1]
 
-        # RNN Model
+        # Model with CNN and Bidirectional LSTM
         model = Sequential()
-        model.add(LSTM(50, input_shape=(look_back, 2)))  # Adjust input shape for two features
-        model.add(Dense(1))
+        model.add(Conv1D(filters=64, kernel_size=2, activation='relu', input_shape=(look_back, 2)))
+        model.add(MaxPooling1D(pool_size=2))
+        model.add(Bidirectional(LSTM(50, return_sequences=True)))
+        model.add(Dropout(0.2))
+        model.add(Bidirectional(LSTM(50)))
+        model.add(Dense(forecast_horizon))
         model.compile(optimizer='adam', loss='mean_squared_error')
 
         # Train the model
-        history = model.fit(X_train, y_train, epochs=120, batch_size=1, verbose=2)
+        history = model.fit(X_train, y_train, epochs=60, batch_size=1, verbose=2)
 
         # Save the model and other important variables
         model.save('lstm_model.h5')

@@ -92,8 +92,8 @@ def fetch_last_n_points(metadata_ids, csv_file, n_points=100):
     print("Last 100 outdoor timestamps:", outdoor_timestamps[:100], outdoor_data[:100])
 
     # Merge indoor and outdoor data based on timestamps
-    all_data = pd.merge(pd.DataFrame({'timestamp': indoor_timestamps, 'indoor_pm2.5': indoor_data}),
-                        pd.DataFrame({'timestamp': outdoor_timestamps, 'outdoor_pm2.5': outdoor_data}),
+    all_data = pd.merge(pd.DataFrame({'timestamp': indoor_timestamps, 'indoor.pm2.5': indoor_data}),
+                        pd.DataFrame({'timestamp': outdoor_timestamps, 'outdoor.pm2.5': outdoor_data}),
                         on='timestamp', how='inner')
 
     # Ensure the data is sorted
@@ -102,7 +102,7 @@ def fetch_last_n_points(metadata_ids, csv_file, n_points=100):
     # Debug: Print the last 100 timestamps
     print("Last 100 merged timestamps:", all_data['timestamp'].values[-100:])
 
-    return all_data[['indoor_pm2.5', 'outdoor_pm2.5']].values[-n_points:], all_data['timestamp'].values[-n_points:]
+    return all_data[['indoor.pm2.5', 'outdoor.pm2.5']].values[-n_points:], all_data['timestamp'].values[-n_points:]
 
 # Upload forecasted and actual data to the database
 def upload_to_db(timestamp, forecasted, actual=None):
@@ -130,9 +130,19 @@ def forecast_pm25():
     clear_dataset_folder()
 
     # Run the scraper and get the latest CSV file
-    latest_csv_file = run_scraper()
+    max_retries = 5
+    retries = 0
+    latest_csv_file = None
+    while retries < max_retries:
+        latest_csv_file = run_scraper()
+        if latest_csv_file:
+            break
+        retries += 1
+        print(f"Failed to download the latest CSV file. Retrying {retries}/{max_retries}...")
+        time.sleep(60)  # Wait 1 minute before retrying
+
     if latest_csv_file is None:
-        print("Failed to download the latest CSV file. Exiting.")
+        print("Failed to download the latest CSV file after multiple attempts. Exiting.")
         return
 
     # Debug: Print the latest CSV file name
@@ -140,7 +150,7 @@ def forecast_pm25():
 
     metadata_ids = [86, 74, 35]
     csv_file = os.path.join('outdoor_pm25_dataset', latest_csv_file)
-    n_points = 2000  # You can adjust this value to experiment with different amounts of data
+    n_points = 72  # You can adjust this value to experiment with different amounts of data
 
     last_n_data, last_n_timestamps = fetch_last_n_points(metadata_ids, csv_file, n_points=n_points)
 
@@ -157,14 +167,16 @@ def forecast_pm25():
     future_timestamps = [current_time + timedelta(hours=i) for i in range(1, 3)]
     predictions = []
 
-    for _ in range(2):
-        pred = model.predict(X_input)
-        predictions.append(pred[0, 0])
+    # Generate multi-step predictions
+    pred = model.predict(X_input)
+    for i in range(pred.shape[1]):
+        predictions.append(pred[0, i])
         # Update X_input for the next prediction
-        X_input = np.roll(X_input, -1, axis=1)
-        # Use the last outdoor data point, modify if you have updated outdoor data
-        new_outdoor_data = X_input[0, -1, 1]  
-        X_input[0, -1, :] = [pred[0, 0], new_outdoor_data]
+        if i < pred.shape[1] - 1:
+            X_input = np.roll(X_input, -1, axis=1)
+            # Use the last outdoor data point, modify if you have updated outdoor data
+            new_outdoor_data = X_input[0, -1, 1]
+            X_input[0, -1, :] = [pred[0, i], new_outdoor_data]
 
     # Inverse transform the predictions
     indoor_pm25_scaler = MinMaxScaler()
@@ -174,17 +186,6 @@ def forecast_pm25():
     # Upload forecasted data to the database
     for i, future_timestamp in enumerate(future_timestamps):
         upload_to_db(future_timestamp.strftime('%Y-%m-%d %H:%M:%S'), predictions_inversed[i][0])
-
-    # Plot the forecasted values
-    plt.figure(figsize=(10, 5))
-    plt.plot(future_timestamps, predictions_inversed, marker='o', label='Forecasted PM2.5')
-    plt.title('Forecast for the Next 2 Hours')
-    plt.xlabel('Timestamp')
-    plt.ylabel('PM2.5 Concentration')
-    plt.xticks(rotation=45)
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
 
 # Function to upload actual data to the database
 def upload_actual_data():
