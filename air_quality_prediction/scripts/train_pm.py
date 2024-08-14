@@ -118,8 +118,8 @@ def main():
                 Y.append(dataset[(i + look_back):(i + look_back + forecast_horizon), 0])
             return np.array(X), np.array(Y)
 
-        look_back = 120
-        forecast_horizon = 2
+        look_back = 96
+        forecast_horizon = 12
         X, y = create_dataset(data_scaled, look_back, forecast_horizon)
         X = np.reshape(X, (X.shape[0], X.shape[1], X.shape[2]))
 

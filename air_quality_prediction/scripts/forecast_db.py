@@ -150,7 +150,7 @@ def forecast_pm25():
 
     metadata_ids = [86, 74, 35]
     csv_file = os.path.join('outdoor_pm25_dataset', latest_csv_file)
-    n_points = 72  # You can adjust this value to experiment with different amounts of data
+    n_points = 96  # You can adjust this value to experiment with different amounts of data
 
     last_n_data, last_n_timestamps = fetch_last_n_points(metadata_ids, csv_file, n_points=n_points)
 
@@ -163,29 +163,21 @@ def forecast_pm25():
     # Get the current time
     current_time = datetime.now()
 
-    # Forecast the next 2 hours from the current time
-    future_timestamps = [current_time + timedelta(hours=i) for i in range(1, 3)]
-    predictions = []
-
+    # Forecast the next 12 hours from the current time
+    future_timestamps = [current_time + timedelta(hours=i) for i in range(1, 13)]
+    
     # Generate multi-step predictions
-    pred = model.predict(X_input)
-    for i in range(pred.shape[1]):
-        predictions.append(pred[0, i])
-        # Update X_input for the next prediction
-        if i < pred.shape[1] - 1:
-            X_input = np.roll(X_input, -1, axis=1)
-            # Use the last outdoor data point, modify if you have updated outdoor data
-            new_outdoor_data = X_input[0, -1, 1]
-            X_input[0, -1, :] = [pred[0, i], new_outdoor_data]
-
+    predictions = model.predict(X_input)[0]  # Predictions for the next 12 steps
+    
     # Inverse transform the predictions
     indoor_pm25_scaler = MinMaxScaler()
     indoor_pm25_scaler.min_, indoor_pm25_scaler.scale_ = scaler.min_[0], scaler.scale_[0]
-    predictions_inversed = indoor_pm25_scaler.inverse_transform(np.array(predictions).reshape(-1, 1))
+    predictions_inversed = indoor_pm25_scaler.inverse_transform(predictions.reshape(-1, 1))
 
     # Upload forecasted data to the database
     for i, future_timestamp in enumerate(future_timestamps):
         upload_to_db(future_timestamp.strftime('%Y-%m-%d %H:%M:%S'), predictions_inversed[i][0])
+
 
 # Function to upload actual data to the database
 def upload_actual_data():
@@ -193,7 +185,7 @@ def upload_actual_data():
     # Use the latest CSV file for actual data
     latest_csv_file = sorted([f for f in os.listdir('outdoor_pm25_dataset') if f.endswith('.csv')])[-1]
     csv_file = os.path.join('outdoor_pm25_dataset', latest_csv_file)
-    n_points = 2  # Fetch the last 2 hours of actual data
+    n_points = 12  # Fetch the last 2 hours of actual data
 
     # Fetch and average the data for the last 2 hours
     conn = connect_to_db()
@@ -226,8 +218,8 @@ def upload_actual_data():
 
 # Schedule the tasks
 forecast_pm25()
-schedule.every(2).hours.do(forecast_pm25)
-schedule.every(2).hours.at(":30").do(upload_actual_data)  # Adjust the timing as needed
+schedule.every(12).hours.do(forecast_pm25)
+schedule.every(12).hours.at(":30").do(upload_actual_data)  # Adjust the timing as needed
 
 # Run the scheduler
 while True:

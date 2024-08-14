@@ -41,17 +41,17 @@ print(f"RMSE: {rmse}")
 print(f"MAE: {mae}")
 
 # Plotting the results: Actual vs Predicted for each step
-for step in range(y_test.shape[1]):
-    plt.figure(figsize=(15, 7))
-    plt.plot(timestamps_test, y_test_inversed[:, step], label=f'Actual PM2.5 Step {step+1}', marker='o', linestyle='-', color='blue')
-    plt.plot(timestamps_test, predictions_inversed[:, step], label=f'Predicted PM2.5 Step {step+1}', marker='x', linestyle='--', color='red')
-    plt.title(f'Comparison of Actual and Predicted PM2.5 Values for Step {step+1}')
-    plt.xlabel('Timestamp')
-    plt.ylabel('PM2.5 Concentration')
-    plt.xticks(rotation=45)
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+# for step in range(y_test.shape[1]):
+#     plt.figure(figsize=(15, 7))
+#     plt.plot(timestamps_test, y_test_inversed[:, step], label=f'Actual PM2.5 Step {step+1}', marker='o', linestyle='-', color='blue')
+#     plt.plot(timestamps_test, predictions_inversed[:, step], label=f'Predicted PM2.5 Step {step+1}', marker='x', linestyle='--', color='red')
+#     plt.title(f'Comparison of Actual and Predicted PM2.5 Values for Step {step+1}')
+#     plt.xlabel('Timestamp')
+#     plt.ylabel('PM2.5 Concentration')
+#     plt.xticks(rotation=45)
+#     plt.legend()
+#     plt.grid(True)
+#     plt.show()
 
 # Plotting the distribution of errors with density
 plt.figure(figsize=(10, 5))
