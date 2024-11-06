@@ -1,0 +1,60 @@
+Configuration: {'look_back': 138, 'forecast_horizon': 72, 'epochs': 131, 'batch_size': 7, 'learning_rate': 0.0034814103519174738, 'dropout_rate': 0.349425478714389, 'lstm_units': 146, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.0026417495654957627, 'Avg MAE': 0.001981065920858029, 'Avg R2': -1.2850470316004632}
+
+Configuration: {'look_back': 57, 'forecast_horizon': 72, 'epochs': 63, 'batch_size': 4, 'learning_rate': 0.002732160361977424, 'dropout_rate': 0.291990868950023, 'lstm_units': 148, 'optimizer': 'rmsprop'}
+Metrics: {'Avg RMSE': 0.0030811320283160044, 'Avg MAE': 0.002070761484739431, 'Avg R2': -0.8353171921602437}
+
+Configuration: {'look_back': 99, 'forecast_horizon': 72, 'epochs': 108, 'batch_size': 4, 'learning_rate': 0.007438159327920417, 'dropout_rate': 0.15614031216505808, 'lstm_units': 268, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.0027934678491412144, 'Avg MAE': 0.002014471987775988, 'Avg R2': -1.1156307984167428}
+
+Configuration: {'look_back': 170, 'forecast_horizon': 72, 'epochs': 92, 'batch_size': 6, 'learning_rate': 0.001451770489609485, 'dropout_rate': 0.3328079168300429, 'lstm_units': 184, 'optimizer': 'rmsprop'}
+Metrics: {'Avg RMSE': 0.0026256253142907687, 'Avg MAE': 0.001967939519234775, 'Avg R2': -1.2819763731519156}
+
+Configuration: {'look_back': 64, 'forecast_horizon': 72, 'epochs': 87, 'batch_size': 2, 'learning_rate': 0.001624630235090775, 'dropout_rate': 0.18662014176974878, 'lstm_units': 84, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.003047351062406376, 'Avg MAE': 0.0020633406628851486, 'Avg R2': -0.86234690758495}
+
+Configuration: {'look_back': 71, 'forecast_horizon': 72, 'epochs': 57, 'batch_size': 4, 'learning_rate': 0.005102645844032962, 'dropout_rate': 0.2799799959644911, 'lstm_units': 203, 'optimizer': 'rmsprop'}
+Metrics: {'Avg RMSE': 0.0029982172126222055, 'Avg MAE': 0.0020538981218273205, 'Avg R2': -0.9133929739024358}
+
+Configuration: {'look_back': 63, 'forecast_horizon': 72, 'epochs': 146, 'batch_size': 6, 'learning_rate': 3.2563325874685316e-05, 'dropout_rate': 0.24326086678781003, 'lstm_units': 238, 'optimizer': 'rmsprop'}
+Metrics: {'Avg RMSE': 0.00277122203935553, 'Avg MAE': 0.0019273184844243259, 'Avg R2': -0.6167150211751629}
+
+Configuration: {'look_back': 97, 'forecast_horizon': 72, 'epochs': 35, 'batch_size': 5, 'learning_rate': 0.007530916041188203, 'dropout_rate': 0.3611161268021964, 'lstm_units': 209, 'optimizer': 'rmsprop'}
+Metrics: {'Avg RMSE': 0.002805559339792465, 'Avg MAE': 0.0020169875382946476, 'Avg R2': -1.1032831971271304}
+
+Configuration: {'look_back': 136, 'forecast_horizon': 72, 'epochs': 80, 'batch_size': 4, 'learning_rate': 0.0007422159849037691, 'dropout_rate': 0.23520304593555674, 'lstm_units': 219, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.002642853389481237, 'Avg MAE': 0.001981894396441625, 'Avg R2': -1.2850550442095943}
+
+Configuration: {'look_back': 166, 'forecast_horizon': 72, 'epochs': 144, 'batch_size': 6, 'learning_rate': 1.0982846323993626e-05, 'dropout_rate': 0.34913843821866786, 'lstm_units': 218, 'optimizer': 'rmsprop'}
+Metrics: {'Avg RMSE': 0.003125358608044914, 'Avg MAE': 0.002310025419360377, 'Avg R2': -2.2215433949098897}
+
+Configuration: {'look_back': 200, 'forecast_horizon': 72, 'epochs': 129, 'batch_size': 7, 'learning_rate': 0.01, 'dropout_rate': 0.1498023210692654, 'lstm_units': 144, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.0026099494430828745, 'Avg MAE': 0.0019551832964901546, 'Avg R2': -1.2789801031358898}
+
+Configuration: {'look_back': 165, 'forecast_horizon': 72, 'epochs': 73, 'batch_size': 1, 'learning_rate': 0.01, 'dropout_rate': 0.49036436781312087, 'lstm_units': 201, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.002628327082374327, 'Avg MAE': 0.0019700988158039435, 'Avg R2': -1.2823790967605542}
+
+Configuration: {'look_back': 200, 'forecast_horizon': 72, 'epochs': 103, 'batch_size': 3, 'learning_rate': 0.0022599526296408125, 'dropout_rate': 0.2949118978998991, 'lstm_units': 240, 'optimizer': 'rmsprop'}
+Metrics: {'Avg RMSE': 0.0026099494430828745, 'Avg MAE': 0.0019551832964901546, 'Avg R2': -1.2789801031358898}
+
+Configuration: {'look_back': 186, 'forecast_horizon': 72, 'epochs': 136, 'batch_size': 6, 'learning_rate': 0.004483181274143539, 'dropout_rate': 0.1830612009014174, 'lstm_units': 196, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.002616923955835661, 'Avg MAE': 0.001960837998153027, 'Avg R2': -1.2802660038713338}
+
+Configuration: {'look_back': 200, 'forecast_horizon': 72, 'epochs': 136, 'batch_size': 5, 'learning_rate': 0.000612104965545327, 'dropout_rate': 0.1602120062674564, 'lstm_units': 184, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.0026099494430828745, 'Avg MAE': 0.0019551832964901546, 'Avg R2': -1.2789801031358898}
+
+Configuration: {'look_back': 59, 'forecast_horizon': 72, 'epochs': 70, 'batch_size': 5, 'learning_rate': 0.003938565467555846, 'dropout_rate': 0.11212988227611423, 'lstm_units': 268, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.003072584380386669, 'Avg MAE': 0.0020687900903729912, 'Avg R2': -0.841529385704806}
+
+Configuration: {'look_back': 89, 'forecast_horizon': 72, 'epochs': 71, 'batch_size': 4, 'learning_rate': 6.340087171941202e-05, 'dropout_rate': 0.4109549394299179, 'lstm_units': 130, 'optimizer': 'rmsprop'}
+Metrics: {'Avg RMSE': 0.002984774620517721, 'Avg MAE': 0.0019295067578806154, 'Avg R2': -1.5068688268773822}
+
+Configuration: {'look_back': 48, 'forecast_horizon': 72, 'epochs': 50, 'batch_size': 6, 'learning_rate': 1e-05, 'dropout_rate': 0.2933163542089485, 'lstm_units': 73, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.002606286646603281, 'Avg MAE': 0.0019025423704620461, 'Avg R2': -0.2641542265522259}
+
+Configuration: {'look_back': 161, 'forecast_horizon': 72, 'epochs': 75, 'batch_size': 4, 'learning_rate': 0.005352421479083926, 'dropout_rate': 0.3113281510768332, 'lstm_units': 284, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.0026304359207394825, 'Avg MAE': 0.001971792702765895, 'Avg R2': -1.2827150030954186}
+
+Configuration: {'look_back': 87, 'forecast_horizon': 72, 'epochs': 139, 'batch_size': 5, 'learning_rate': 3.07729283018006e-05, 'dropout_rate': 0.4346153683729922, 'lstm_units': 86, 'optimizer': 'adam'}
+Metrics: {'Avg RMSE': 0.021189474399283512, 'Avg MAE': 0.003181125408502678, 'Avg R2': -109.19334093777908}
+

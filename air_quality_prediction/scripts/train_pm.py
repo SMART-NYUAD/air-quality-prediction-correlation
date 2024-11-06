@@ -3,16 +3,15 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout, Conv1D, MaxPooling1D, Bidirectional
+from tensorflow.keras.layers import LSTM, Dense, Dropout, Conv1D, MaxPooling1D, Bidirectional, ReLU
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import pickle
 import os
 import pytz
 from dotenv import load_dotenv
+from tensorflow.keras.optimizers import Adam
 
-# Import the scraper function
-from web_scraper_cities import run_scraper
 
 # Define your local time zone (e.g., for Abu Dhabi)
 local_tz = pytz.timezone('Asia/Dubai')
@@ -63,32 +62,37 @@ def fetch_sensor_data(metadata_ids):
     conn.close()
     return np.array(data), np.array(timestamps)
 
-# Read outdoor PM2.5 data from CSV
-def read_csv_data(filename):
-    df = pd.read_csv(filename, delimiter=',', parse_dates=['timestamp'], date_parser=lambda x: pd.to_datetime(x, format='%Y-%m-%dT%H:%M:%S.%f%z'))
+def fetch_outdoor_data():
+    conn = connect_to_db()
+    cursor = conn.cursor()
+    data = []
+    timestamps = []
     
-    # Convert the timestamps to the correct time zone
-    df['timestamp'] = df['timestamp'].dt.tz_convert('Asia/Dubai').dt.tz_localize(None)
-    
-    df.sort_values('timestamp', ascending=False, inplace=True)
-    if df.empty:
-        print("CSV file is empty or not loaded properly.")
-    return df['pm2.5_raw'].values, df['timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S').values
+    query = f"""
+    SELECT cities_data.pm2_5_raw, sensor_statistics_coorelation.timestamp as unix_timestamp
+    FROM cities_data
+    JOIN sensor_statistics_coorelation ON cities_data.update_time_id = sensor_statistics_coorelation.update_time_id
+    WHERE location = "Outdoor"
+    ORDER BY sensor_statistics_coorelation.timestamp DESC
+    LIMIT 10000
+    """
+    cursor.execute(query)
+    results = cursor.fetchall()
+    data.extend([float(result[0]) for result in results])
+    timestamps.extend([unix_to_local(result[1]) for result in results])
+    cursor.close()
+    conn.close()
+    return np.array(data), np.array(timestamps)
 
 def main():
-    # Run the scraper and get the latest CSV file
-    latest_csv_file = run_scraper()
-    if latest_csv_file is None:
-        print("Failed to download the latest CSV file. Exiting.")
-        return
-
-    # Debug: Print the latest CSV file name
-    print("Using latest CSV file:", latest_csv_file)
-
-    metadata_ids = [86, 74, 35]
+    # Debug: Print the message indicating the start of the process
+    print("Fetching outdoor data from database...")
+    
+    metadata_ids = [86, 74, 35]  # Define metadata IDs for indoor data
     indoor_data, indoor_timestamps = fetch_sensor_data(metadata_ids)
-    csv_file = os.path.join('outdoor_pm25_dataset', latest_csv_file)
-    outdoor_data, outdoor_timestamps = read_csv_data(csv_file)
+    
+    # Use fetch_outdoor_data instead of reading from CSV
+    outdoor_data, outdoor_timestamps = fetch_outdoor_data()
 
     # Debug before merging
     print("Sample indoor timestamps:", indoor_timestamps[:5])
@@ -118,8 +122,8 @@ def main():
                 Y.append(dataset[(i + look_back):(i + look_back + forecast_horizon), 0])
             return np.array(X), np.array(Y)
 
-        look_back = 96
-        forecast_horizon = 12
+        look_back = 48
+        forecast_horizon = 72
         X, y = create_dataset(data_scaled, look_back, forecast_horizon)
         X = np.reshape(X, (X.shape[0], X.shape[1], X.shape[2]))
 
@@ -134,14 +138,17 @@ def main():
         model = Sequential()
         model.add(Conv1D(filters=64, kernel_size=2, activation='relu', input_shape=(look_back, 2)))
         model.add(MaxPooling1D(pool_size=2))
-        model.add(Bidirectional(LSTM(50, return_sequences=True)))
-        model.add(Dropout(0.2))
-        model.add(Bidirectional(LSTM(50)))
+        model.add(Bidirectional(LSTM(73, return_sequences=True)))
+        model.add(Dropout(0.29))
+        model.add(Bidirectional(LSTM(73)))
         model.add(Dense(forecast_horizon))
-        model.compile(optimizer='adam', loss='mean_squared_error')
+        model.add(ReLU()) 
 
+        learning_rate = 1e-5
+        optimizer = Adam(learning_rate=learning_rate)
+        model.compile(optimizer=optimizer, loss='mean_squared_error')
         # Train the model
-        history = model.fit(X_train, y_train, epochs=60, batch_size=1, verbose=2)
+        history = model.fit(X_train, y_train, epochs=50, batch_size=6, verbose=1)
 
         # Save the model and other important variables
         model.save('lstm_model.h5')

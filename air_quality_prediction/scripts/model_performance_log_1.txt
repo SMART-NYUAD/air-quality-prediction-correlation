@@ -1,0 +1,33 @@
+Configuration: {'look_back': 96, 'forecast_horizon': 72, 'epochs': 60, 'batch_size': 1, 'learning_rate': 0.001, 'dropout_rate': 0.3, 'lstm_units': 100, 'optimizer': 'adam'}
+Metrics: {'RMSE': 0.031085622316754227, 'MAE': 0.0036338309982821746, 'R2': -0.013857891560153277, 'Training Time': 2770.0990414619446}
+
+Configuration: {'look_back': 96, 'forecast_horizon': 72, 'epochs': 60, 'batch_size': 1, 'learning_rate': 0.001, 'dropout_rate': 0.3, 'lstm_units': 100, 'optimizer': 'adam'}
+Metrics: {'RMSE': 0.004307835492061762, 'MAE': 0.0027051283996010044, 'R2': -0.6510627452794167, 'Training Time': 5684.809780359268}
+
+Configuration: {'look_back': 96, 'forecast_horizon': 72, 'epochs': 60, 'batch_size': 1, 'learning_rate': 0.001, 'dropout_rate': 0.3, 'lstm_units': 100, 'optimizer': 'adam'}
+Metrics: {'RMSE': 0.002586169000264043, 'MAE': 0.0018812627414923405, 'R2': -1.1239206613180632, 'Training Time': 8467.56727528572}
+
+Configuration: {'look_back': 96, 'forecast_horizon': 72, 'epochs': 60, 'batch_size': 1, 'learning_rate': 0.001, 'dropout_rate': 0.3, 'lstm_units': 100, 'optimizer': 'adam'}
+Metrics: {'RMSE': 0.002681890933186657, 'MAE': 0.002055804049584573, 'R2': -1.4256221396419129, 'Training Time': 11080.387005090714}
+
+Configuration: {'look_back': 120, 'forecast_horizon': 72, 'epochs': 50, 'batch_size': 2, 'learning_rate': 0.0005, 'dropout_rate': 0.4, 'lstm_units': 150, 'optimizer': 'rmsprop'}
+Metrics: {'RMSE': 0.031222390153649696, 'MAE': 0.0036391661282731014, 'R2': -0.013775982738301187, 'Training Time': 1425.8791153430939}
+
+Configuration: {'look_back': 120, 'forecast_horizon': 72, 'epochs': 50, 'batch_size': 2, 'learning_rate': 0.0005, 'dropout_rate': 0.4, 'lstm_units': 150, 'optimizer': 'rmsprop'}
+Metrics: {'RMSE': 0.004326397475611686, 'MAE': 0.0027229193575959267, 'R2': -0.6559376298548526, 'Training Time': 2829.8433141708374}
+
+Configuration: {'look_back': 120, 'forecast_horizon': 72, 'epochs': 50, 'batch_size': 2, 'learning_rate': 0.0005, 'dropout_rate': 0.4, 'lstm_units': 150, 'optimizer': 'rmsprop'}
+Metrics: {'RMSE': 0.002570305279597815, 'MAE': 0.001866194749362748, 'R2': -1.1151699536784963, 'Training Time': 4500.535294055939}
+
+Configuration: {'look_back': 120, 'forecast_horizon': 72, 'epochs': 50, 'batch_size': 2, 'learning_rate': 0.0005, 'dropout_rate': 0.4, 'lstm_units': 150, 'optimizer': 'rmsprop'}
+Metrics: {'RMSE': 0.0026310275346699504, 'MAE': 0.0020245457788393515, 'R2': -1.4571803704471702, 'Training Time': 5748.745983123779}
+
+Configuration: {'look_back': 72, 'forecast_horizon': 72, 'epochs': 40, 'batch_size': 1, 'learning_rate': 0.001, 'dropout_rate': 0.2, 'lstm_units': 80, 'optimizer': 'adam'}
+Metrics: {'RMSE': 0.030950162499084347, 'MAE': 0.0036239699031143874, 'R2': -0.013904410091362436, 'Training Time': 1514.7013802528381}
+
+Configuration: {'look_back': 72, 'forecast_horizon': 72, 'epochs': 40, 'batch_size': 1, 'learning_rate': 0.001, 'dropout_rate': 0.2, 'lstm_units': 80, 'optimizer': 'adam'}
+Metrics: {'RMSE': 0.004289746659149275, 'MAE': 0.002688815385444593, 'R2': -0.6471185591117412, 'Training Time': 3073.8273344039917}
+
+Configuration: {'look_back': 72, 'forecast_horizon': 72, 'epochs': 40, 'batch_size': 1, 'learning_rate': 0.001, 'dropout_rate': 0.2, 'lstm_units': 80, 'optimizer': 'adam'}
+Metrics: {'RMSE': 0.002587224648306174, 'MAE': 0.001885997731717119, 'R2': -1.1339947768453758, 'Training Time': 4680.490885257721}
+

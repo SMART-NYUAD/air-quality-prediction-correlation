@@ -19,15 +19,9 @@ def run_scraper():
     # Set up Chrome options
     chrome_options = Options()
     chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    prefs = {
-        "download.default_directory": download_dir,
-        "download.prompt_for_download": False,
-        "download.directory_upgrade": True,
-        "safebrowsing.enabled": True
-        }
+    prefs = {"download.default_directory": download_dir}
     chrome_options.add_experimental_option("prefs", prefs)
 
     # Set up the WebDriver
@@ -56,11 +50,9 @@ def run_scraper():
             )
             raw_dataset_button.click()
 
-            time.sleep(2)  # Adjust time as needed for download to complete
-
             # Wait for the download button to be clickable and then click it to download the file
             download_button = WebDriverWait(driver, 20).until(
-                EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[@role='presentation']/div[@role='dialog']//div[@class='MuiBox-root css-xi606m']/button[@type='button']"))
+                EC.element_to_be_clickable((By.XPATH, "/html/body/div[4]/div[@role='presentation']/div[@role='dialog']//button[@type='button']"))
             )
             download_button.click()
 
@@ -87,4 +79,5 @@ def run_scraper():
         driver.quit()
 
     return None
+
 run_scraper()
